@@ -221,7 +221,6 @@ fun signUpScreen() {
                 fontWeight = FontWeight.Bold)
         }
         Spacer(modifier = Modifier.height(50.dp))
-        Spacer(modifier = Modifier.height(50.dp))
         Row(
             verticalAlignment = Alignment.Bottom
         ) {
