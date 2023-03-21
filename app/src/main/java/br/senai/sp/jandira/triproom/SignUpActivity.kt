@@ -40,11 +40,6 @@ class SignUpActivity : ComponentActivity() {
     }
 }
 
-@Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
-}
-
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun signUpScreen() {

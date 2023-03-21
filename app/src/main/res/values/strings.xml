@@ -15,4 +15,5 @@
     <string name="phone">Phone</string>
     <string name="over18">Over 18?</string>
     <string name="createAccount">Create Account</string>
+    <string name="title_activity_home">HomeActivity</string>
 </resources>
