@@ -8,6 +8,7 @@
     <string name="signin">Sign in</string>
     <string name="signup">Sign up</string>
     <string name="dont_have">Don\'t have an account?</string>
+    <string name="have_account">have an account?</string>
     <string name="email_description">E-mail icon incide text field</string>
     <string name="title_activity_sign_up">SignUpActivity</string>
     <string name="create">Create a new account</string>

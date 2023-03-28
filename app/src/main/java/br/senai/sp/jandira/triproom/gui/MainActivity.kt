@@ -1,16 +1,14 @@
-package br.senai.sp.jandira.triproom
+package br.senai.sp.jandira.triproom.gui
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -20,9 +18,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import br.senai.sp.jandira.triproom.R
+import br.senai.sp.jandira.triproom.components.BottomShape
+import br.senai.sp.jandira.triproom.components.TopShape
 import br.senai.sp.jandira.triproom.ui.theme.TripRoomTheme
 
 class MainActivity : ComponentActivity() {
@@ -53,13 +55,7 @@ fun tripScreen(){
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.End
         ) {
-            Card(modifier = Modifier
-                .width(120.dp)
-                .height(40.dp),
-                backgroundColor = Color(207, 6, 240),
-                shape = RoundedCornerShape(0.dp,0.dp,0.dp,30.dp)
-                ) {
-            }
+           TopShape()
         }
 
         //Header
@@ -102,9 +98,10 @@ fun tripScreen(){
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
+                var email by remember{ mutableStateOf(TextFieldValue("")) }
                 OutlinedTextField(
-                    value = "",
-                    onValueChange = {},
+                    value = email,
+                    onValueChange = {newEmail -> email = newEmail},
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(16.dp),
                     label = {
@@ -117,7 +114,11 @@ fun tripScreen(){
                             tint = Color(207,1,240)
 
                         )
-                    }
+                    },
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        unfocusedBorderColor = Color(207, 6, 240),
+                        focusedBorderColor = Color(207, 6, 240)
+                    )
                 )
             }
             Spacer(
@@ -127,9 +128,10 @@ fun tripScreen(){
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
+                var password by remember{ mutableStateOf(TextFieldValue("")) }
                 OutlinedTextField(
-                    value = "",
-                    onValueChange = {},
+                    value = password,
+                    onValueChange = {newPassword -> password = newPassword},
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(16.dp),
                     label = {
@@ -142,7 +144,11 @@ fun tripScreen(){
                             tint = Color(207,1,240)
 
                         )
-                    }
+                    },
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        unfocusedBorderColor = Color(207, 6, 240),
+                        focusedBorderColor = Color(207, 6, 240)
+                    )
                 )
             }
             Spacer(
@@ -153,7 +159,10 @@ fun tripScreen(){
                 horizontalArrangement = Arrangement.End
             ) {
                 Button(
-                    onClick = { /*TODO*/ },
+                    onClick = {
+                        val intent = Intent(context, HomeActivity::class.java)
+                        context.startActivity(intent)
+                    },
                     colors = ButtonDefaults.buttonColors(Color(207, 6, 240)),
                     shape = RoundedCornerShape(16.dp)
 
@@ -178,7 +187,9 @@ fun tripScreen(){
         }
 
         Row(
-            modifier = Modifier.fillMaxWidth().padding(16.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
             horizontalArrangement = Arrangement.End
         ) {
             Text(text = stringResource(id = R.string.dont_have))
@@ -196,15 +207,7 @@ fun tripScreen(){
         Row(
             verticalAlignment = Alignment.Bottom
         ) {
-            Card(modifier = Modifier
-                .width(120.dp)
-                .height(40.dp),
-                backgroundColor = Color(207, 6, 240),
-                shape = RoundedCornerShape(0.dp,30.dp,0.dp,0.dp)
-
-            ) {
-
-            }
+            BottomShape()
         }
     }
 }

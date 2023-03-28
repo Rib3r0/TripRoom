@@ -1,4 +1,4 @@
-package br.senai.sp.jandira.triproom
+package br.senai.sp.jandira.triproom.gui
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -9,18 +9,16 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import br.senai.sp.jandira.triproom.R
 import br.senai.sp.jandira.triproom.ui.theme.TripRoomTheme
 
 class HomeActivity : ComponentActivity() {
@@ -28,7 +26,7 @@ class HomeActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             TripRoomTheme {
-
+                homePage()
             }
         }
     }
@@ -36,6 +34,9 @@ class HomeActivity : ComponentActivity() {
 @Preview(showSystemUi = true)
 @Composable
 fun homePage() {
+
+    val context = LocalContext.current
+
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         item(){
             Card(
