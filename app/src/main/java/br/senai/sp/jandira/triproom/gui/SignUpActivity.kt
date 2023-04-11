@@ -1,16 +1,18 @@
 package br.senai.sp.jandira.triproom.gui
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Place
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,17 +24,35 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import br.senai.sp.jandira.triproom.R
 import br.senai.sp.jandira.triproom.components.BottomShape
 import br.senai.sp.jandira.triproom.components.TopShape
+import br.senai.sp.jandira.triproom.model.User
+import br.senai.sp.jandira.triproom.repository.UserRepository
 
 class SignUpActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        //val user = User(
+          //  username = "Maria Da Silva",
+         //   email = "maria@terra.com.br",
+         //   password = "12345",
+         //   phone = "(11)99999-9999",
+         //   isOver18 = true
+        //)
+
+        //val userRep = UserRepository(this)
+        //var id = userRep.save(user)
+
+        //Toast.makeText(this, "$id", Toast.LENGTH_LONG).show()
+
+
         setContent {
 
             signUpScreen()
@@ -109,11 +129,11 @@ fun signUpScreen() {
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.Center
         ) {
-            var username by remember{ mutableStateOf(TextFieldValue("")) }
+            var usernameState by remember{ mutableStateOf("") }
 
             OutlinedTextField(
-                value = username,
-                onValueChange = {newUsername -> username = newUsername},
+                value = usernameState,
+                onValueChange = {newUsername -> usernameState = newUsername},
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
                 label = {
@@ -132,12 +152,13 @@ fun signUpScreen() {
                 )
             )
             Spacer(modifier = Modifier.height(10.dp))
-            var phone by remember{ mutableStateOf(TextFieldValue("")) }
+            var phoneState by remember{ mutableStateOf("") }
             OutlinedTextField(
-                value = phone,
-                onValueChange = {newPhone -> phone = newPhone},
+                value = phoneState,
+                onValueChange = {newPhone -> phoneState = newPhone},
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
                 label = {
                     Text(text = stringResource(id = R.string.phone))
                 },
@@ -154,12 +175,13 @@ fun signUpScreen() {
                 )
             )
             Spacer(modifier = Modifier.height(10.dp))
-            var email by remember{ mutableStateOf(TextFieldValue("")) }
+            var emailState by remember{ mutableStateOf("") }
             OutlinedTextField(
-                value = email,
-                onValueChange = {newEmail -> email = newEmail},
+                value = emailState,
+                onValueChange = {newEmail -> emailState = newEmail},
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                 label = {
                     Text(text = stringResource(id = R.string.email))
                 },
@@ -176,12 +198,14 @@ fun signUpScreen() {
                 )
             )
             Spacer(modifier = Modifier.height(10.dp))
-            var password by remember{ mutableStateOf(TextFieldValue("")) }
+            var passwordState by remember{ mutableStateOf("") }
             OutlinedTextField(
-                value = password,
-                onValueChange = {newPassword -> password = newPassword},
+                value = passwordState,
+                onValueChange = {newPassword -> passwordState = newPassword},
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                visualTransformation = PasswordVisualTransformation(),
                 label = {
                     Text(text = stringResource(id = R.string.password))
                 },
@@ -198,16 +222,17 @@ fun signUpScreen() {
                 )
             )
             Spacer(modifier = Modifier.height(10.dp))
+            val over18State = remember { mutableStateOf(false) }
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(15.dp, 0.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                val checkedState = remember { mutableStateOf(false) }
+
                 Checkbox(
-                    checked = checkedState.value,
-                    onCheckedChange = { checkedState.value = it },
+                    checked = over18State.value,
+                    onCheckedChange = { over18State.value = it },
                     modifier = Modifier
                         .scale(scale = 1.6f)
                         .size(40.dp)
@@ -220,44 +245,55 @@ fun signUpScreen() {
                     fontSize = 16.sp
                 )
             }
+
+            Button(
+                onClick = {
+                          saveUser(
+                              userName = usernameState,
+                              phone = phoneState,
+                              email = emailState,
+                              password = passwordState,
+                              isOver18 = over18State.value,
+                              context = context
+
+                          )
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(60.dp)
+                    .padding(15.dp, 0.dp),
+                colors = ButtonDefaults.buttonColors(Color(207, 6, 240)),
+                shape = RoundedCornerShape(16.dp)
+            ) {
+                Text(
+                    text = stringResource(id = R.string.createAccount).
+                    uppercase(),
+                    color = Color.White,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold
+
+                )
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.End
+            ) {
+                Text(text = stringResource(id = R.string.have_account))
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = stringResource(id = R.string.signin),
+                    modifier = Modifier.clickable {
+                        val intent = Intent(context, MainActivity::class.java)
+                        context.startActivity(intent)
+                    },
+                    color = Color(207, 6, 240),
+                    fontWeight = FontWeight.Bold)
+            }
         }
     }
 
-        Button(
-            onClick = { /*TODO*/ },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(60.dp)
-                .padding(15.dp, 0.dp),
-            colors = ButtonDefaults.buttonColors(Color(207, 6, 240)),
-            shape = RoundedCornerShape(16.dp)
-        ) {
-            Text(
-                text = stringResource(id = R.string.createAccount).
-                uppercase(),
-                color = Color.White,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold
-
-            )
-        }
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.End
-        ) {
-            Text(text = stringResource(id = R.string.have_account))
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = stringResource(id = R.string.signin),
-                modifier = Modifier.clickable {
-                    val intent = Intent(context, MainActivity::class.java)
-                    context.startActivity(intent)
-                },
-                color = Color(207, 6, 240),
-                fontWeight = FontWeight.Bold)
-        }
         Row(
             verticalAlignment = Alignment.Bottom
         ) {
@@ -266,3 +302,40 @@ fun signUpScreen() {
 
     }
 }
+
+fun saveUser(
+    userName: String,
+    phone: String,
+    email: String,
+    password: String,
+    isOver18: Boolean,
+    context: Context
+) {
+    //criamdo um objeto user
+   val newUser = User(
+       id = 0,
+       username = userName,
+       phone = phone,
+       email = email,
+       password = password,
+       isOver18 = isOver18
+   )
+    //criando um instancia no repositório
+    val userRepository = UserRepository(context)
+
+    //verificar se o usuario já existe
+    val user = userRepository.findUserByEmail(email)
+    Log.i("ds2m", "${user.toString()}")
+    
+    //salvar o usuario
+
+    if (user == null){
+        val id =userRepository.save(newUser)
+
+        Toast.makeText(context, "Created User #$id", Toast.LENGTH_LONG).show()
+    }
+    Toast.makeText(context, "User already exist!", Toast.LENGTH_LONG).show()
+
+}
+
+

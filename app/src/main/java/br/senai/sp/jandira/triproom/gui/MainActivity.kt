@@ -1,12 +1,16 @@
 package br.senai.sp.jandira.triproom.gui
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -18,13 +22,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import br.senai.sp.jandira.triproom.R
 import br.senai.sp.jandira.triproom.components.BottomShape
 import br.senai.sp.jandira.triproom.components.TopShape
+import br.senai.sp.jandira.triproom.model.User
+import br.senai.sp.jandira.triproom.repository.UserRepository
 import br.senai.sp.jandira.triproom.ui.theme.TripRoomTheme
 
 class MainActivity : ComponentActivity() {
@@ -44,7 +51,8 @@ class MainActivity : ComponentActivity() {
 @Preview(showSystemUi = true)
 @Composable
 fun tripScreen(){
-
+    var emailState by remember{ mutableStateOf("") }
+    var passwordState by remember{ mutableStateOf("") }
     val context = LocalContext.current
 
     Column(
@@ -98,12 +106,13 @@ fun tripScreen(){
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
-                var email by remember{ mutableStateOf(TextFieldValue("")) }
+
                 OutlinedTextField(
-                    value = email,
-                    onValueChange = {newEmail -> email = newEmail},
+                    value = emailState,
+                    onValueChange = {newEmail -> emailState = newEmail},
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(16.dp),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                     label = {
                         Text(text = stringResource(id = R.string.email))
                     },
@@ -128,12 +137,14 @@ fun tripScreen(){
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
-                var password by remember{ mutableStateOf(TextFieldValue("")) }
+
                 OutlinedTextField(
-                    value = password,
-                    onValueChange = {newPassword -> password = newPassword},
+                    value = passwordState,
+                    onValueChange = {newPassword -> passwordState = newPassword},
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(16.dp),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                    visualTransformation = PasswordVisualTransformation(),
                     label = {
                         Text(text = stringResource(id = R.string.password))
                     },
@@ -160,8 +171,13 @@ fun tripScreen(){
             ) {
                 Button(
                     onClick = {
-                        val intent = Intent(context, HomeActivity::class.java)
-                        context.startActivity(intent)
+                        verifyUser(
+                            email = emailState,
+                            password = passwordState,
+                            context = context
+                        )
+
+
                     },
                     colors = ButtonDefaults.buttonColors(Color(207, 6, 240)),
                     shape = RoundedCornerShape(16.dp)
@@ -210,4 +226,28 @@ fun tripScreen(){
             BottomShape()
         }
     }
+}
+
+fun verifyUser(
+    email: String,
+    password: String,
+    context: Context
+) {
+
+    //criando um instancia no repositório
+    val userRepository = UserRepository(context)
+
+    //verificar se o usuario já existe
+    val user = userRepository.validatePassword(email,password)
+    Log.i("ds2m", "${user.toString()}")
+
+    //salvar o usuario
+
+    if (user == null){
+        Toast.makeText(context, "email or password wrong!", Toast.LENGTH_SHORT).show()
+    }else{
+        val intent = Intent(context, HomeActivity::class.java)
+        context.startActivity(intent)
+    }
+
 }
