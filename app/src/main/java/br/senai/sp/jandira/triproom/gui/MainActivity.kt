@@ -247,6 +247,7 @@ fun verifyUser(
         Toast.makeText(context, "email or password wrong!", Toast.LENGTH_SHORT).show()
     }else{
         val intent = Intent(context, HomeActivity::class.java)
+        intent.putExtra("ïd", user.id)
         context.startActivity(intent)
     }
 

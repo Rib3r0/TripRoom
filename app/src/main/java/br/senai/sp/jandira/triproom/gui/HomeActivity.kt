@@ -1,6 +1,7 @@
 package br.senai.sp.jandira.triproom.gui
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.BorderStroke
@@ -24,6 +25,10 @@ import br.senai.sp.jandira.triproom.ui.theme.TripRoomTheme
 class HomeActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.i(
+            "ds2m",
+            "id: ${}")
+
         setContent {
             TripRoomTheme {
                 homePage()

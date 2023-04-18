@@ -2,11 +2,14 @@ package br.senai.sp.jandira.triproom.gui
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -34,6 +37,8 @@ import br.senai.sp.jandira.triproom.components.BottomShape
 import br.senai.sp.jandira.triproom.components.TopShape
 import br.senai.sp.jandira.triproom.model.User
 import br.senai.sp.jandira.triproom.repository.UserRepository
+import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
 
 class SignUpActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,6 +68,22 @@ class SignUpActivity : ComponentActivity() {
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun signUpScreen() {
+
+    var photoUri by remember {
+        mutableStateOf<Uri?>(null)
+    }
+
+    var launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ){
+        photoUri = it
+    }
+
+    var painter = rememberAsyncImagePainter(
+        ImageRequest.Builder(LocalContext.current)
+            .data(photoUri)
+            .build()
+    )
 
     var scrollState = rememberScrollState(0)
 
@@ -101,14 +122,21 @@ fun signUpScreen() {
             )
             Box(contentAlignment = Alignment.BottomEnd){
                 Card(
-                    modifier = Modifier.size(100.dp),
+                    modifier = Modifier
+                        .size(100.dp)
+                        .clickable {
+                            launcher.launch("image/*")
+                            var message = "nada"
+                            Log.i(
+                                "ds2m",
+                                "URI: ${photoUri?.path ?: message} "
+                            )
+                        },
                     shape = CircleShape
                 ){
-                    Icon(
-                        painter = painterResource(
-                            id = R.drawable.person_24),
+                    Image(
+                        painter = if(photoUri == null) painterResource (id = R.drawable.person_24) else painter,
                         contentDescription = "",
-                        tint = Color(207, 6, 240)
                     )
                 }
                 Icon(
@@ -254,6 +282,7 @@ fun signUpScreen() {
                               email = emailState,
                               password = passwordState,
                               isOver18 = over18State.value,
+                              profilePhotoUri = photoUri?.path ?: "",
                               context = context
 
                           )
@@ -309,6 +338,7 @@ fun saveUser(
     email: String,
     password: String,
     isOver18: Boolean,
+    profilePhotoUri: String,
     context: Context
 ) {
     //criamdo um objeto user
@@ -318,7 +348,8 @@ fun saveUser(
        phone = phone,
        email = email,
        password = password,
-       isOver18 = isOver18
+       isOver18 = isOver18,
+       profilephoto = profilePhotoUri
    )
     //criando um instancia no repositório
     val userRepository = UserRepository(context)
