@@ -17,4 +17,7 @@
     <string name="over18">Over 18?</string>
     <string name="createAccount">Create Account</string>
     <string name="title_activity_home">HomeActivity</string>
+    <string name="categories">Categories</string>
+    <string name="search">Search your destine</string>
+    <string name="past_trips">Search your destine</string>
 </resources>
